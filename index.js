@@ -38,22 +38,22 @@ io.on('connection', (socket) => {
   socket.emit('messages', list_messages);
 
 
-  socket.on('join_room',(data)=>{
-    console.log(data.room);
-    socket.join(data.room);
+  socket.on('join_conversation', (data) => {
+    console.log(data.conversationID);
+    socket.join(data.conversationID);
   });
   //listen on new_message
   socket.on('new_message', (res) => {
     //broadcast the new message
     const data = {
       _id: Math.random().toString(36).substring(2, 10),
-      content: res.content,
-      senderId: res.owner,
+      content: res.message.content,
+      senderId: res.message.owner,
       timestamp: new Date().toDateString()
     }
     // list_messages.push(data);
     console.log(res);
-    socket.to(res.room).emit("new_message",data);
+    socket.to(res.conversationID).emit("new_message", data);
     // socket.broadcast.emit('new_message', data);
   })
 
