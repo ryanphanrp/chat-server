@@ -1,74 +1,94 @@
-var app = require('express')();
-var http = require('http').createServer(app);
-var io = require('socket.io')(http, {
+const express = require('express');
+const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const {
+  Server
+} = require("socket.io");
+const io = new Server(server, {
   cors: {
     origin: '*',
   }
 });
 
-let list_messages = [
-  {
-    _id: '1',
-    content: 'first message',
-    senderId: 'partner',
-    timestamp: 'hoi nay'
-  },
-  {
-    _id: '2',
-    content: 'second message',
-    senderId: '__therealTINHTUTE',
-    timestamp: 'truoc do'
-  },
-  {
-    _id: '3',
-    content: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-    senderId: 'partner',
-    timestamp: 'moi day'
-  }
-];
+/* Local import */
+const User = require('./utils/data');
+const Message = require('./utils/data');
+const cs = require('./utils/conversation.js');
 
-// Socket
+/* Get and Load data */
+let conversationList = cs.getAllConversation();
+
+
+/* Pagesite on html */
+app.get('/', (req, res) => {
+  res.send('<h1>Hello world</h1>');
+});
+
+
+/*
+  Socket
+*/
 io.on('connection', (socket) => {
   console.log('New user connected')
 
   socket.id
+
   //default username
   socket.username = "Anonymous";
 
-  socket.emit('messages', list_messages);
+  // Emit all message
+  socket.emit('messages', []);
 
+  // All Conversations
+  socket.emit('conversations', conversationList);
 
-  socket.on('join_conversation', (data) => {
-    console.log(data.conversationID);
-    socket.join(data.conversationID);
+  // New Conversation
+  socket.on('new_conversation', (res) => {
+    console.log('New Conversation');
+    const newCs = cs.Conversation(res.name, res.users);
+    cs.addNewConversation(newCs);
+    socket.emit('new_conversation', newCs);
   });
-  //listen on new_message
+
+  // Join Exist Conversation
+  socket.on('join_conversation', (data) => {
+    console.log(data);
+    const conversation = cs.getConversation(data);
+    console.log(conversation);
+    socket.join(data);
+    socket.to(data).emit("messages", 'vc');
+  });
+
+
+  // listen on new_message
   socket.on('new_message', (res) => {
-    //broadcast the new message
-    const data = {
-      _id: Math.random().toString(36).substring(2, 10),
-      content: res.message.content,
-      senderId: res.message.owner,
-      timestamp: new Date().toDateString()
-    }
-    // list_messages.push(data);
-    console.log(res);
-    socket.to(res.conversationID).emit("new_message", data);
-    // socket.broadcast.emit('new_message', data);
+    // broadcast the new message
+    // const data = {
+    //   _id: Math.random().toString(36).substring(2, 10),
+    //   content: res.message.content,
+    //   senderId: res.message.owner,
+    //   timestamp: new Date().toDateString()
+    // }
+    const data = new User(res.message.content, res.message.owner);
+    console.log(data);
+    //socket.to(res.conversationID).emit("new_message", data);
+    socket.broadcast.emit('new_message', data)
   })
 
-  //listen on typing
+
+  //l isten on typing
   socket.on('typing', (data) => {
-    socket.broadcast.emit('typing', { username: socket.username })
+    socket.broadcast.emit('typing', {
+      username: socket.username
+    })
   })
 });
 
-// Socket Listen
-io.listen(3000, () => {
-  console.log('Socket listen 3000')
-})
 
-app.get('/', (req, res) => res.send('hello!'));
-http.listen(4444, () => {
+/*
+  Server running
+*/
+server.listen(3000, () => {
   console.log('listening on *:3000');
 });

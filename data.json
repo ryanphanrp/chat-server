@@ -1,0 +1,31 @@
+[{
+  "_id": "n6n6jn9c",
+  "name": "sfddsf",
+  "users": [{
+    "isVerified": false,
+    "avatarUrl": "http://res.cloudinary.com/aloapp/image/upload/v1618740226/smc7cc5dzuq4xki5pd09.jpg",
+    "bio": "Fan Barca",
+    "followers": ["60645917fca0d81dc8987bff", "6068059167b52609ac0d9998", "60715a41c19e402e0077b799"],
+    "following": [],
+    "_id": "60645877fca0d81dc8987bfc",
+    "email": "vanlam020499@gmail.com",
+    "name": "_vanlam99",
+    "username": "nvl.99",
+    "__v": 0,
+    "expireToken": "2021-04-05T18:33:23.233Z",
+    "resetToken": "51b8cf54e79e9b0675b9ea276caf077ad1c42e5e80db13aa2dbe6ea7e56ff594"
+  }, {
+    "isVerified": false,
+    "avatarUrl": "http://res.cloudinary.com/aloapp/image/upload/v1620458571/gqq5li6d87rttguqkz6u.png",
+    "bio": "VAI LON CHUA ???",
+    "followers": ["60715a41c19e402e0077b799"],
+    "following": ["60715a41c19e402e0077b799"],
+    "_id": "60963c3a0c977620d0fd4e80",
+    "email": "vailon@gmail.com",
+    "name": "Vai Lon",
+    "username": "vailon",
+    "__v": 0
+  }],
+  "messages": [],
+  "timestamp": "Sun May 09 2021"
+}]
