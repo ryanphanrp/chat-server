@@ -38,6 +38,27 @@ exports.getAllConversation = () => {
   return listConversation;
 }
 
+exports.getConversationOfUser = (username) => {
+  return listConversation.filter(ele => checkUsers(ele.users, username));
+}
+
 exports.getConversation = (ID) => {
   return listConversation.find(ele => ele._id === ID);
+}
+
+exports.saveMessages = (ID, message) => {
+  listConversation.map(ele => {
+    if (ele._id === ID) {
+      ele.messages.push(message);
+      return ele;
+    } else {
+      return ele;
+    }
+  });
+  fs.writeFileSync('./utils/conversation.json', JSON.stringify(listConversation), { 'encoding': 'utf8' });
+}
+
+/* Functions */
+function checkUsers(users, username) {
+  return users.find(ele => ele.username === username);
 }
