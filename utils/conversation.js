@@ -6,13 +6,14 @@ listConversation = JSON.parse(fs.readFileSync('./utils/conversation.json', {
   'encoding': 'utf8'
 }));
 
-exports.Conversation = (name, users) => {
+exports.Conversation = (name, users, options) => {
   return {
     _id: Math.random().toString(36).substring(2, 10),
     name: name,
     users: users,
     messages: [],
-    timestamp: (new Date()).toDateString()
+    timestamp: (new Date()).toDateString(),
+    options: options
   }
 }
 
@@ -51,6 +52,17 @@ exports.saveMessages = (ID, message) => {
     if (ele._id === ID) {
       ele.messages.push(message);
       return ele;
+    } else {
+      return ele;
+    }
+  });
+  fs.writeFileSync('./utils/conversation.json', JSON.stringify(listConversation), { 'encoding': 'utf8' });
+}
+
+exports.changeColor = (ID, color) => {
+  listConversation.map(ele => {
+    if (ele._id === ID) {
+      ele.options = color;
     } else {
       return ele;
     }

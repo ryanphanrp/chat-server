@@ -90,12 +90,20 @@ io.on('connection', (socket) => {
     const data = {
       _id: Math.random().toString(36).substring(2, 10),
       content: res.content,
-      senderId: res.owner,
+      senderId: res.senderId,
       timestamp: new Date().toDateString()
     }
     let conversation = cs.getConversation(res.ID);
     cs.saveMessages(res.ID, data);
-    socket.to(conversationID).emit('new_message', data);
+    socket.broadcast.to(conversationID).emit('new_message', data);
+    console.log(socket.rooms);
+  });
+
+  // listen on change_color
+  socket.on('change_color', (res) => {
+    console.log(`${res.ID} - ${res.color}`);
+    cs.changeColor(res.ID, res.color);
+    socket.broadcast.to(res.ID).emit('change_color', res.color);
   });
 
 
