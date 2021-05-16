@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
 
   // New Conversation
   socket.on('new_conversation', (res) => {
-    const newCs = cs.Conversation(res.name, res.users);
+    const newCs = cs.Conversation(res.name, res.users, res.options);
     console.log(newCs);
     cs.addNewConversation(newCs);
     //socket.emit('new_conversation', newCs);
