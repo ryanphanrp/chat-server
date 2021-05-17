@@ -19,6 +19,7 @@ const cs = require('./utils/conversation.js');
 
 /* Get and Load data */
 let conversationList = cs.getAllConversation();
+const PORT = process.env.PORT|| 3000;
 
 
 /* Pagesite on html */
@@ -119,6 +120,6 @@ io.on('connection', (socket) => {
 /*
   Server running
 */
-server.listen(3000, () => {
+server.listen(PORT, () => {
   console.log('listening on *:3000');
 });
