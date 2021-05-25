@@ -4,6 +4,7 @@ exports.User = class User {
     this.name = name;
     this.username = username;
     this.avatarUrl = avatarUrl;
+    this.isOnline = false;
   }
 
   get() {
@@ -11,7 +12,8 @@ exports.User = class User {
       _id: this._id,
       name: this.name,
       username: this.username,
-      avatarUrl: this.avatarUrl
+      avatarUrl: this.avatarUrl,
+      isOnline: this.isOnline
     }
   }
 }

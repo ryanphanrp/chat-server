@@ -20,6 +20,7 @@ const cs = require('./utils/conversation.js');
 /* Get and Load data */
 let conversationList = cs.getAllConversation();
 const PORT = process.env.PORT|| 3000;
+let users = {};
 
 
 /* Pagesite on html */
@@ -34,21 +35,22 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('A users connected.');
 
-  socket.id
+  // socket.id
 
   //default username
   socket.username = "Anonymous";
 
   // Online
   socket.once('online', (res) => {
-    const message = `${res} has been online.`;
-    console.log(message);
-    socket.broadcast.emit('online', message);
+    console.log(`${res} has been online.`);
+    users[socket.id] = res;
+    socket.broadcast.emit('online', res);
   });
 
   // Offline
   socket.on('disconnect', (res) => {
     console.log('User disconnect');
+    delete users[socket.id];
     socket.leave(socket.id);
   })
 
@@ -70,8 +72,14 @@ io.on('connection', (socket) => {
     const newCs = cs.Conversation(res.name, res.users, res.options);
     console.log(newCs);
     cs.addNewConversation(newCs);
-    //socket.emit('new_conversation', newCs);
+    socket.emit('new_conversation', newCs);
   });
+
+  socket.on('join_p2p', res => {
+    console.log(res);
+    const conversation = cs.getP2PConversation(res);
+    socket.emit('join_p2p', conversation);
+  })
 
 
   // Join Exist Conversation
@@ -80,6 +88,7 @@ io.on('connection', (socket) => {
     const conversation = cs.getConversation(res.ID);
     socket.leave(socket.id);
     socket.join(res.ID);
+    console.log(conversation);
     socket.to(res.ID).emit('join_conversation', conversation);
     socket.to(res.ID).emit('status', `${res.username} has been joined ${res.ID} conversation`);
   });
@@ -97,7 +106,7 @@ io.on('connection', (socket) => {
     let conversation = cs.getConversation(res.ID);
     cs.saveMessages(res.ID, data);
     socket.broadcast.to(conversationID).emit('new_message', data);
-    console.log(socket.rooms);
+    console.log(`Sent this message to ${res.ID}`);
   });
 
   // listen on change_color

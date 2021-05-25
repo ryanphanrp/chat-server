@@ -47,6 +47,25 @@ exports.getConversation = (ID) => {
   return listConversation.find(ele => ele._id === ID);
 }
 
+exports.getP2PConversation = (members) => {
+  const res = haveConversation(members);
+  if (res.length === 1) {
+    return res[0];
+  } else {
+    const newCs = {
+      _id: Math.random().toString(36).substring(2, 10),
+      name: 'P2P',
+      users: members,
+      messages: [],
+      timestamp: (new Date()).toDateString(),
+      options: '#3498db'
+    };
+    listConversation.push(newCs);
+    fs.writeFileSync('./utils/conversation.json', JSON.stringify(listConversation), { 'encoding': 'utf8' });
+    return newCs;
+  }
+}
+
 exports.saveMessages = (ID, message) => {
   listConversation.map(ele => {
     if (ele._id === ID) {
@@ -73,4 +92,19 @@ exports.changeColor = (ID, color) => {
 /* Functions */
 function checkUsers(users, username) {
   return users.find(ele => ele.username === username);
+}
+
+function haveConversation(members) {
+  return listConversation.filter(ele => existConversation(ele, members));
+}
+
+function existConversation(conversation, members) {
+  const length = conversation.users.length === members.length;
+  const listID = conversation.users.map(ele => ele._id);
+  return members.every(ele => listID.includes(ele._id)) && length;
+}
+
+function checkConversation(conversation, members) {
+  const listID = conversation.users.map(ele => ele._id);
+  return members.every(ele => listID.includes(ele._id));
 }
